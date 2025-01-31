@@ -35,10 +35,16 @@ class PeminjamanResource(resources.ModelResource):
         model = Peminjaman 
 
 class PeminjamanAdmin(ExportMixin, admin.ModelAdmin):
-    resource_class = Peminjaman
+    resource_class = PeminjamanResource
     list_filter = (('tanggal_pinjam'),( 'tanggal_kembali'))
-    list_display = ('nim', 'id_buku', 'tanggal_pinjam', 'tanggal_kembali')
+    list_display = ('nim', 'id_buku', 'tanggal_pinjam', 'tanggal_kembali','id_petugas')
     search_fields = ['nim__nim', 'id_buku__judul']
+    exclude = ('id_petugas',)
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.id_petugas = request.user
+        super().save_model(request, obj, form, change)
     
 
 admin.site.register(Mahasiswa,MahasiswaAdmin)

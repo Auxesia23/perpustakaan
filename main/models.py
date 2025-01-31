@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 class Mahasiswa(models.Model) :
@@ -25,6 +25,7 @@ class Peminjaman(models.Model) :
     id_buku = models.ForeignKey(Buku, models.CASCADE)
     tanggal_pinjam = models.DateField()
     tanggal_kembali = models.DateField()
+    id_petugas = models.ForeignKey(User,models.CASCADE,editable=False)
 
     def __str__(self):
         return f"{self.nim} - {self.id_buku.judul}"
