@@ -8,7 +8,7 @@ CREATE DATABASE dj_perpustakaan;
 -- Langkah 2: Buat user dan beri hak akses
 CREATE USER 'perpustakaan_user'@'localhost' IDENTIFIED BY 'password_aman';
 GRANT ALL PRIVILEGES ON dj_perpustakaan.* TO 'perpustakaan_user'@'localhost';
-
+```
 
 ## 2. Pemrograman Aplikasi
 - **Bahasa Pemrograman**: Python
