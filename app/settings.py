@@ -82,13 +82,17 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': dj_database_url.parse(os.getenv('DB_URL'))
 }
+# Jika menggunakan konfigurasi manual tanpa DB_URL
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'dj_perpustakaan',
+#         'USER': 'user',
+#         'PASSWORD': 'password',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
 #     }
 # }
-
 
 JAZZMIN_SETTINGS = {
     
