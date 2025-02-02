@@ -303,7 +303,7 @@ Beberapa saran pengembangan untuk meningkatkan fungsionalitas sistem:
 # 6. Lampiran
 
 ## 6.1 Source Code
-- [Source Code](https://github.com/your-username/dj-perpustakaan)
+- [Source Code](https://github.com/Auxesia23/perpustakaan)
 
 ## 6.2 Dokumentasi Teknis
 ### Persyaratan Sistem
@@ -314,8 +314,8 @@ Beberapa saran pengembangan untuk meningkatkan fungsionalitas sistem:
 ### Langkah Instalasi
 1. Clone repository:
    ```bash
-   git clone https://github.com/your-username/dj-perpustakaan.git
-   cd dj-perpustakaan
+   git clone https://github.com/Auxesia23/perpustakaan.git
+   cd perpustakaan
    ```
 
 2. Buat virtual environment:
