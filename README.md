@@ -176,3 +176,188 @@ python manage.py migrate
 - Menggunakan environment variables di `.env` untuk konfigurasi sensitif
 - Django ORM memberikan proteksi SQL injection bawaan
 - Sistem autentikasi Django untuk manajemen user
+
+
+# 4. Pengujian
+## Sekenario Pengujian
+### 4.1 Unit Testing
+#### Authentication Module
+1. Verifikasi fungsi login dengan kredensial valid
+2. Verifikasi penanganan login dengan kredensial invalid
+3. Verifikasi fungsi logout
+
+#### Data Management Module
+1. Validasi CRUD operations untuk entitas Mahasiswa:
+   - Verifikasi pembuatan data mahasiswa dengan input valid
+   - Validasi constraint NIM unik
+   - Verifikasi format nomor telepon
+   - Pengujian update data mahasiswa
+   - Verifikasi penghapusan data mahasiswa
+
+2. Validasi CRUD operations untuk entitas Buku:
+   - Verifikasi pembuatan data buku dengan input valid
+   - Validasi field wajib (judul, penulis, penerbit)
+   - Verifikasi format tahun terbit
+   - Pengujian update informasi buku
+   - Verifikasi penghapusan data buku
+
+3. Validasi CRUD operations untuk Peminjaman:
+   - Verifikasi pembuatan transaksi peminjaman
+   - Validasi tanggal peminjaman dan pengembalian
+   - Pengujian relasi dengan mahasiswa dan buku
+   - Verifikasi update status peminjaman
+   - Pengujian penghapusan data peminjaman
+
+### 4.2 Integration Testing
+1. Database Integration:
+   - Verifikasi koneksi database
+   - Pengujian integritas referensial foreign keys
+   - Validasi cascade operations
+
+2. Module Integration:
+   - Integrasi antara authentication dan data management
+   - Verifikasi alur peminjaman end-to-end
+   - Pengujian concurrent transactions
+
+### 4.3 Data Import/Export Testing
+1. Import Data:
+   - Validasi import data dari file CSV
+   - Verifikasi handling format data invalid
+   - Pengujian duplicate data handling
+   - Validasi constraint saat import
+
+2. Export Data:
+   - Verifikasi export data ke format CSV
+   - Validasi struktur file hasil export
+   - Pengujian export data dengan filter
+   - Verifikasi integritas data hasil export
+
+### 4.4 User Interface Testing
+1. Responsiveness Testing:
+   - Verifikasi tampilan pada berbagai ukuran layar
+   - Pengujian komponen UI responsif
+   - Validasi tata letak dan alignment
+
+2. Functional Testing:
+   - Verifikasi navigasi antar halaman
+   - Pengujian form validation
+   - Verifikasi feedback dan error messages
+   - Validasi sorting dan filtering data
+
+
+## Hasil Pengujian
+Semua pengujian berhasil. Tidak ada masalah yang ditemukan.
+
+# 5. Kesimpulan
+## 5.1 Evaluasi Projek
+Projek sistem perpustakaan berbasis Django ini telah berhasil diimplementasikan dengan memenuhi semua kebutuhan yang telah ditentukan. Beberapa pencapaian utama meliputi:
+
+1. Sistem berhasil mengimplementasikan manajemen data perpustakaan secara lengkap:
+   - Pengelolaan data mahasiswa
+   - Pengelolaan data buku
+   - Pengelolaan transaksi peminjaman
+
+2. Fitur keamanan yang kuat:
+   - Sistem autentikasi pengguna
+   - Manajemen hak akses
+   - Perlindungan terhadap serangan umum web
+
+3. Interface yang user-friendly:
+   - Tampilan responsif
+   - Navigasi yang intuitif
+   - Feedback yang jelas kepada pengguna
+
+4. Pengelolaan data yang efisien:
+   - Import/export data melalui CSV
+   - Validasi data yang ketat
+   - Integritas referensial database
+
+## 5.2 Pengembangan Lebih Lanjut
+Beberapa saran pengembangan untuk meningkatkan fungsionalitas sistem:
+
+1. Fitur Notifikasi:
+   - Notifikasi email untuk batas waktu pengembalian
+   - Notifikasi untuk buku yang sudah tersedia
+   - Sistem reminder untuk peminjaman yang terlambat
+
+2. Peningkatan Sistem Pencarian:
+   - Implementasi pencarian full-text
+   - Filter dan sorting yang lebih advanced
+   - Rekomendasi buku berdasarkan history peminjaman
+
+3. Manajemen Inventaris:
+   - Sistem barcode untuk buku
+   - Tracking kondisi buku
+   - Manajemen pengadaan buku baru
+
+4. Pelaporan dan Analitik:
+   - Dashboard statistik peminjaman
+   - Laporan berkala penggunaan perpustakaan
+   - Analisis tren peminjaman buku
+
+5. Integrasi dan Ekspansi:
+   - Integrasi dengan sistem akademik
+   - Aplikasi mobile untuk mahasiswa
+   - Sistem rating dan review buku
+
+# 6. Lampiran
+
+## 6.1 Source Code
+- [Source Code](https://github.com/your-username/dj-perpustakaan)
+
+## 6.2 Dokumentasi Teknis
+### Persyaratan Sistem
+- Python 3.8 atau lebih tinggi
+- MySQL 8.0 atau lebih tinggi
+- pip (Python package installer)
+
+### Langkah Instalasi
+1. Clone repository:
+   ```bash
+   git clone https://github.com/your-username/dj-perpustakaan.git
+   cd dj-perpustakaan
+   ```
+
+2. Buat virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # atau
+   venv\Scripts\activate  # Windows
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Setup database:
+   - Buat database MySQL sesuai dengan langkah di bagian Implementasi
+   - Copy `.env.example` ke `.env` dan sesuaikan konfigurasi
+
+5. Jalankan migrasi:
+   ```bash
+   python manage.py migrate
+   ```
+
+6. Buat superuser:
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+7. Jalankan server:
+   ```bash
+   python manage.py runserver
+   ```
+
+### Penggunaan
+1. Akses aplikasi di `http://localhost:8000`
+2. Login menggunakan kredensial superuser
+3. Mulai dengan menambahkan data mahasiswa dan buku
+4. Kelola peminjaman melalui menu yang tersedia
+
+### Troubleshooting
+- Pastikan semua dependencies terinstall dengan benar
+- Periksa konfigurasi database di file `.env`
+- Pastikan MySQL server berjalan
+- Periksa log untuk informasi error lebih detail
