@@ -1,3 +1,6 @@
+# SIMPERPUS - Sistem Informasi Manajemen Perpustakaan
+### (Library Management System using Django Framework)
+
 # 1. Pendahuluan
 
 ## 1.1 Latar Belakang
