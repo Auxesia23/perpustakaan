@@ -1,0 +1,320 @@
+{% extends "admin/index.html" %}
+{% block extrahead %}
+{{ block.super }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+    --primary: #4f46e5;
+    --secondary: #6366f1;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --light: #f8f9fa;
+    --dark: #1e293b;
+}
+#jazzy-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%
+    
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    border-left: 4px solid;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.stat-card h3 {
+    font-size: 1rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-card p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Memastikan minimal lebar 400px */
+    gap: 2rem; /* Jarak antar elemen */
+    margin-top: 2rem;
+}
+
+@media (max-width: 800px) {
+    .charts-container {
+        grid-template-columns: 1fr; /* Satu kolom untuk layar kecil */
+    }
+}
+
+.chart-box {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    min-width: 400px; /* Atur lebar minimal chart */
+}
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.spinner {
+    animation: rotate 1s linear infinite;
+    width: 24px;
+    height: 24px;
+}
+
+@keyframes rotate {
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    <div class="stats-grid">
+        <div class="stat-card" style="border-color: var(--primary)">
+            <h3><i class="fas fa-users"></i> Total Mahasiswa</h3>
+            <p id="totalMahasiswa" class="text-primary">-</p>
+        </div>
+        
+        <div class="stat-card" style="border-color: var(--success)">
+            <h3><i class="fas fa-book"></i> Total Buku</h3>
+            <p id="totalBuku" class="text-success">-</p>
+        </div>
+        
+        <div class="stat-card" style="border-color: var(--warning)">
+            <h3><i class="fas fa-calendar-day"></i> Peminjaman Hari Ini</h3>
+            <p id="peminjamanHariIni" class="text-warning">-</p>
+        </div>
+    </div>
+    
+    <div class="charts-container">
+        <div class="chart-box">
+            <div class="chart-header">
+                <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Status Peminjaman</h3>
+                <div class="chart-actions">
+                    <button class="btn btn-sm" onclick="toggleChartType('peminjamanChart')">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="position: relative; height: 300px">
+                <div class="loading-overlay" id="chart1Loading">
+                    <div class="spinner">
+                        <i class="fas fa-spinner fa-2x text-muted"></i>
+                    </div>
+                </div>
+                <canvas id="peminjamanChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-box">
+            <div class="chart-header">
+                <h3 class="chart-title"><i class="fas fa-chart-line"></i> Tren Harian</h3>
+            </div>
+            <div style="position: relative; height: 300px">
+                <div class="loading-overlay" id="chart2Loading">
+                    <div class="spinner">
+                        <i class="fas fa-spinner fa-2x text-muted"></i>
+                    </div>
+                </div>
+                <canvas id="peminjamanHarianChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{{ block.super }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let statusChart = null;
+    
+    // Tampilkan loading state
+    document.getElementById('chart1Loading').style.display = 'flex';
+    document.getElementById('chart2Loading').style.display = 'flex';
+
+    fetch("http://127.0.0.1:8000/main/data/")
+    .then(response => {
+        if (!response.ok) throw new Error('Gagal memuat data');
+        return response.json();
+    })
+    .then(data => {
+        // Update statistik
+        document.getElementById("totalMahasiswa").textContent = data.total_mahasiswa.toLocaleString();
+        document.getElementById("totalBuku").textContent = data.total_buku.toLocaleString();
+        document.getElementById("peminjamanHariIni").textContent = data.peminjaman_hari_ini.toLocaleString();
+
+        // Chart Status Peminjaman
+        const statusData = {
+            labels: ["Dipinjam", "Dikembalikan", "Terlambat"],
+            datasets: [{
+                data: [
+                    data.status_peminjaman.dipinjam || 0,
+                    data.status_peminjaman.dikembalikan || 0,
+                    data.status_peminjaman.terlambat || 0
+                ],
+                backgroundColor: [
+                    getComputedStyle(document.documentElement).getPropertyValue('--warning'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--success'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--danger')
+                ],
+                borderWidth: 0
+            }]
+        };
+
+        const statusConfig = {
+            type: 'doughnut',
+            data: statusData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    datalabels: {
+                        formatter: (value, ctx) => {
+                            let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            return sum > 0 ? ((value * 100) / sum).toFixed(1) + '%' : '';
+                        },
+                        color: '#1e293b',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        };
+
+        statusChart = new Chart(
+            document.getElementById('peminjamanChart').getContext('2d'),
+            statusConfig
+        );
+
+        // Chart Tren Harian
+        new Chart(
+            document.getElementById('peminjamanHarianChart').getContext('2d'),
+            {
+                type: 'line',
+                data: {
+                    labels: Object.keys(data.peminjaman_harian),
+                    datasets: [{
+                        label: 'Jumlah Peminjaman',
+                        data: Object.values(data.peminjaman_harian),
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'white',
+                        pointBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+                        fill: true,
+                        backgroundColor: 'rgba(79, 70, 229, 0.05)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e2e8f0' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            }
+        );
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat memuat data statistik');
+    })
+    .finally(() => {
+        // Sembunyikan loading state
+        document.getElementById('chart1Loading').style.display = 'none';
+        document.getElementById('chart2Loading').style.display = 'none';
+    });
+});
+
+function toggleChartType(chartId) {
+    if (statusChart) {
+        const newType = statusChart.config.type === 'doughnut' ? 'pie' : 'doughnut';
+        statusChart.destroy();
+        statusChart = new Chart(
+            document.getElementById(chartId).getContext('2d'),
+            {
+                ...statusChart.config,
+                type: newType
+            }
+        );
+    }
+}
+</script>
+
+{% endblock %}
