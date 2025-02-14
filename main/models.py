@@ -53,6 +53,9 @@ class Peminjaman(models.Model):
         # Jika belum dikembalikan dan melewati tanggal kembali, ubah status menjadi terlambat
         if self.status == "dipinjam" and date.today() > self.tanggal_kembali:
             self.status = "terlambat"
+        
+        if not self.id_petugas_id:
+            self.id_petugas_id = User.objects.first().id
 
         super().save(*args, **kwargs)
 
