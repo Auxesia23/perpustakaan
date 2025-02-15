@@ -1,3 +1,21 @@
+# Tutorial Menjalankan Aplikasi dengan Docker
+
+1. Salin file `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Sesuaikan konfigurasi di file `.env` sesuai kebutuhan (contoh: kredensial database, username dan password admin)
+3. Build image Docker:
+   ```bash
+   docker compose build
+   ```
+4. Jalankan container:
+   ```bash
+   docker compose up
+   ```
+
+Setelah itu, aplikasi akan berjalan di http://127.0.0.1:8000/admin
+
 # SIMPERPUS - Sistem Informasi Manajemen Perpustakaan
 ### (Library Management System using Django Framework)
 
@@ -79,6 +97,7 @@ Dalam era digital saat ini, pengelolaan data akademik yang efisien dan terstrukt
 | id              | BIGINT        | Primary Key                    |
 | tanggal_pinjam  | DATE          | Tanggal peminjaman             |
 | tanggal_kembali | DATE          | Tanggal pengembalian           |
+| status          | VARCHAR(12)   | Status Peminjaman           |
 | id_buku_id      | BIGINT        | Foreign Key ke main_buku       |
 | id_petugas_id   | INTEGER       | Foreign Key ke auth_user       |
 | nim_id          | VARCHAR(8)    | Foreign Key ke main_mahasiswa  |
@@ -121,7 +140,7 @@ CREATE DATABASE dj_perpustakaan;
 
 -- Langkah 2: Buat user dan beri hak akses
 CREATE USER 'perpustakaan_user'@'localhost' IDENTIFIED BY 'password_aman';
-GRANT ALL PRIVILEGES ON dj_perpustakaan.* TO 'perpustakaan_user'@'localhost';
+GRANT ALL PRIVILEGES ON dj_perpustakaan TO 'perpustakaan_user'@'localhost';
 ```
 
 ## 3.2 Pemrograman Aplikasi
