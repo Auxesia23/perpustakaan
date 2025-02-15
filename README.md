@@ -1,4 +1,5 @@
 # Tutorial Menjalankan Aplikasi dengan Docker
+### Pastikan docker/docker desktop sudah terinstall dan dijalankan
 
 1. Salin file `.env.example` menjadi `.env`:
    ```bash
@@ -373,7 +374,7 @@ Beberapa saran pengembangan untuk meningkatkan fungsionalitas sistem:
    ```
 
 ### Penggunaan
-1. Akses aplikasi di `http://localhost:8000`
+1. Akses aplikasi di `http://127.0.0.1:8000/admin`
 2. Login menggunakan kredensial superuser
 3. Mulai dengan menambahkan data mahasiswa dan buku
 4. Kelola peminjaman melalui menu yang tersedia
